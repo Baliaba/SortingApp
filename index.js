@@ -4,10 +4,10 @@ const app = express()
 
 const getFileData = () => {
     if (typeof require !== 'undefined') XLSX = require('xlsx');
-    var workbook = XLSX.readFile('./inputs/test2.xlsx');
+    var workbook = XLSX.readFile('./inputs/test.xlsx');
 
     var first_sheet_name = workbook.SheetNames[0];
-    var address_of_amount = 'D';
+    var address_of_amount = 'N';
     var address_of_text = 'A';
 
     /* Get worksheet */
@@ -15,6 +15,7 @@ const getFileData = () => {
     var amount = [];
     var text = [];
     var uniqueArray  = []
+    var copy  = [];
     Object.keys(worksheet).forEach((pos) => {
         if (pos.search(address_of_amount) == 0) {
             var desired_cell = worksheet[pos];
@@ -30,9 +31,14 @@ const getFileData = () => {
     //     "montant2" : amount ,
     //     "texte" : text
     // } 
-    uniqueArray =  amount.filter(function(elem, pos) {
-        return amount.indexOf(elem) == pos;
+    copy = amount
+    copy.forEach((elem,pos)=>{
+        if(!isDuplicates(amount,elem)){
+            uniqueArray.push(elem); 
+         }else
+            console.log("<--", elem)
     })
+    console.log("Worked: ", uniqueArray.length,  "/ " , amount.length  , )
     return uniqueArray;
 }
 
@@ -41,6 +47,21 @@ const ec = (r, c) => {
         r: r,
         c: c
     })
+}
+
+const isDuplicates = (data  , nb)=>{
+    
+    let count = 0;
+    for(i=0;i<data.length;i++){
+        if(data[i] + nb === 0){
+            count ++
+            console.log(data[i] , "---", nb,  "---->", count)
+        }
+    }
+    if(count == 2 && count%2 == 0){
+        return true;
+    }
+    return false;
 }
 
 const delete_row = (ws, row_index) => {
